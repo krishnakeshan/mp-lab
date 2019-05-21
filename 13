@@ -1,0 +1,47 @@
+#include <LPC21xx.h>
+
+void clockwise(void);
+void anticlockwise(void);
+int var1[] = {1,2,4,8};
+int var2[] = {8,4,2,1};
+
+
+int main()
+{
+	int j;
+	PINSEL2 = 0X00000000;
+	IO1DIR = 0X00F00000;
+	IO1CLR = 0x00F00000;
+	while(1)
+	{
+		for(j=0;j<13600;j++);
+		  clockwise();
+		for(j=0;j<13600;j++);
+		//clockwise();
+		anticlockwise();
+	}
+}
+
+void clockwise(void)
+{
+	int i,j;
+	for(i=0;i<500;i++)
+	{
+		IO1CLR = 0x00F00000;
+		for(j =0;j<13600;j++);
+		IO1SET = var1[i%4]<<20;
+		for(j=0;j<13600;j++);
+	}
+}
+void anticlockwise(void)
+{
+	int i,j;
+	for(i=0;i<500;i++)
+	{
+		IO1CLR = 0x00F00000;
+		for(j =0;j<13600;j++);
+		IO1SET = var2[i%4]<<20;
+		for(j=0;j<13600;j++);
+	}
+}
+
