@@ -1,0 +1,98 @@
+# include<lpc214x.h>
+# define rs 2
+# define en 3
+
+void lcd_init();
+void lcdcmdwrite();
+void lcddatawrite();
+void lcdcmd(char);
+void lcddata(char);
+void delay(int);
+void lcdstring(char*);
+void display();
+
+int main()
+{
+	 PINSEL0=0X00000000;
+	 IO0DIR=0X0000000FC;
+	
+	lcd_init();
+	while(1)
+	{
+		display();
+	}
+}
+void display()
+{
+	lcdcmd(0x80);
+	lcdstring("HELLO");
+	 lcdcmd(0xc0);
+	lcdstring("PEEPS");
+	 lcdcmd(0x01);
+}
+
+void lcd_init()
+{
+	 IO0DIR=IO0DIR|0XFC;
+	  lcdcmd(0x02);
+	  lcdcmd(0x28);
+	  lcdcmd(0x0E);
+	  lcdcmd(0x06);
+}
+
+void lcdstring(char *x)
+{
+	 while(*x!='\0')
+	 {
+		 lcddata(*x);
+		 x++;
+	 
+	 }
+ }
+
+ void lcddata(char x)
+ {
+	 IO0SET=IO0SET|((x&0xf0));
+	 lcddatawrite();
+	  
+	 IO0CLR=IO0CLR|((x&0xf0));
+	 IO0SET=IO0SET|(((x<<4)&0xf0));
+	  lcddatawrite();
+	 IO0CLR=IO0CLR|((x<<4)&(0xf0));
+ }
+  void lcdcmd(char x)
+	{
+		 
+		IO0SET=IO0SET|((x&0xf0));
+		lcdcmdwrite();
+		IO0CLR=IO0CLR|((x&0xf0));
+		IO0SET=IO0SET|((x<<4)&(0xf0));
+		 lcdcmdwrite();
+		IO0CLR=IO0CLR|(((x<<4)&0xf0));
+	}
+	
+ void lcdcmdwrite()
+ { 
+	 IO0CLR=IO0CLR|(1<<rs);
+	 IO0SET=IO0SET|(1<<en);
+	  delay(5);
+	 IO0CLR=IO0CLR|(1<<en);
+	  delay(10);
+ }
+ 
+ void lcddatawrite()
+ {
+	 IO0SET=IO0SET|(1<<rs);
+	 IO0SET=IO0SET|(1<<en);
+	  delay(5);
+	 IO0CLR=IO0CLR|(1<<en);
+	  delay(10);
+ }
+ 
+ void delay(int k)
+ {
+	 unsigned long int i,j;
+	 for(i=0;i<k;i++)
+	 for(j=0;j<=199990;j++);
+	 
+ }
