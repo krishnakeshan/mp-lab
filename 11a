@@ -1,0 +1,48 @@
+.model small
+.data
+ ctr equ 0e883h
+ pa equ 0e880h
+ pb equ 0e881h
+ look db 128,144,160,176,188,200,210,220,228,236,242,246,250,252,254,255
+      db 254,252,250,246,242,236,228,220,210,200,188,176,160,144,128
+      db 128,128,128,128,128,128,128,128,128,128,128,128,128,128,128
+      db 128,128,128,128,128,128,128,128,128,128,128,128,128,128,128
+
+.code
+mov ax,@data
+mov ds,ax
+mov dx,ctr
+mov al,80h
+out dx,al
+mov bx,00h
+da:mov al,look[bx]
+ mov dx,pa
+ out dx,al
+ mov dx,pb
+ out dx,al
+ inc bx
+ cmp bx,61
+ jl rpt
+ mov bx,00h
+ jmp da
+rpt: call delay
+    mov ah,0bh
+    int 21h
+    or al,al
+    jz da
+    mov ah,4ch
+    int 21h
+
+delay proc near
+push bx
+push cx
+mov bx,01fh
+d1:mov cx,0fffh
+d2:loop d2
+dec bx
+jnz d1
+pop cx
+pop bx
+ret
+delay endp
+end
